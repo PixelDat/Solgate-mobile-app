@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import './pages/SplashScreen.dart';
+import './pages/onboarding.dart';  // Add this import
 
 void main() {
   runApp(MaterialApp(
     initialRoute: '/',
     routes: {
-      '/': (context) => SplashScreen(), // Add splash screen as initial route
-      // '/home': (context) => HomeScreen(), // Your home screen widget
+      '/': (context) => SplashScreen(),
+      '/onboarding': (context) => OnboardingFlow(),  // Add this route
     },
   ));
 }

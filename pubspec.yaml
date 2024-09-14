@@ -63,7 +63,16 @@ flutter:
     - assets/images/background.png
     - assets/images/solgate-logo-main.png
     - assets/images/splash-text.png
+    - assets/images/coin_wen.png
+    - assets/images/coin_solana.png
+    - assets/images/coin_dogwithat.png
+    - assets/images/coin_myro.png
+    - assets/images/coin_bonk.png
+    - assets/images/coin_raydium.png
+    - assets/images/coin_jupiter.png
+    - assets/images/coin_usdt.png
 
+  # An image asset can refer to one or more resolution-specific "variants", see
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
