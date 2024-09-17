@@ -104,6 +104,40 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         ),
       ],
     ),
+
+    OnboardingPage(
+      title: 'Wallet and exchange integration',
+      description:
+          'Securely manage, transfer and receive tokens. Conveniently handle transactions on Solana.',
+      backgroundImagePath: 'assets/images/background.png',
+      coins: [
+        CoinImage(
+            imagePath: 'assets/images/coin_jupiter.png',
+            position: Offset(110, -50),
+            size: 150),
+        const CoinImage(
+            imagePath: 'assets/images/coin_dogwithat.png',
+            position: Offset(-50, 20),
+            size: 150),
+        const CoinImage(
+            imagePath: 'assets/images/coin_wen.png',
+            position: Offset(260, 20),
+            size: 150),
+        const CoinImage(
+            imagePath: 'assets/images/coin_myro.png',
+            position: Offset(-20, 460),
+            size: 150),
+        const CoinImage(
+            imagePath: 'assets/images/coin_bonk.png',
+            position: Offset(300, 390),
+            size: 150),
+        const WalletExchangeImage(
+          imagePath: 'assets/images/Wallet_integration.png', // Update this path
+          size: 500, // Adjust size as needed
+        ),
+      ],
+    ),
+
     OnboardingPage(
       title: 'Wallet and exchange integration',
       description:
@@ -497,4 +531,30 @@ class LiquidDotsPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class WalletExchangeImage extends StatelessWidget {
+  final String imagePath;
+  final double size;
+
+  const WalletExchangeImage({
+    Key? key,
+    required this.imagePath,
+    this.size = 300, // Default size, adjust as needed
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 100),
+        child: Image.asset(
+          imagePath,
+          width: size,
+          height: size,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
 }

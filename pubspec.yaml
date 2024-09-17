@@ -79,6 +79,7 @@ flutter:
     - assets/images/dogwifhat-wif.png
     - assets/images/bonk1-bonk.png
     - assets/images/raydium.png
+    - assets/images/Wallet_integration.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
