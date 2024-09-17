@@ -71,7 +71,14 @@ flutter:
     - assets/images/coin_raydium.png
     - assets/images/coin_jupiter.png
     - assets/images/coin_usdt.png
-
+    - assets/images/Solana_3D.png
+    - assets/images/Raydium 1.png 
+    - assets/images/Tether 2.png 
+    - assets/images/Wen_logo.png 
+    - assets/images/MYRO.png
+    - assets/images/dogwifhat-wif.png
+    - assets/images/bonk1-bonk.png
+    - assets/images/raydium.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -84,17 +91,12 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
+  fonts:
+    - family: Nunito_Sans
+      fonts:
+        - asset: assets/fonts/Nunito_Sans/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf
+        - asset: assets/fonts/Nunito_Sans/NunitoSans-Italic-VariableFont_YTLC,opsz,wdth,wght.ttf
+          weight: 900
+  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

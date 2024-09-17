@@ -9,5 +9,11 @@ void main() {
       '/': (context) => SplashScreen(),
       '/onboarding': (context) => OnboardingFlow(),  // Add this route
     },
+    theme: ThemeData(
+      fontFamily: 'Nunito_Sans',
+      textTheme: ThemeData.light().textTheme.apply(
+        fontFamily: 'Nunito_Sans',
+      ),
+    ),
   ));
 }
