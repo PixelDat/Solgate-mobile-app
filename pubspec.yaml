@@ -80,6 +80,15 @@ flutter:
     - assets/images/bonk1-bonk.png
     - assets/images/raydium.png
     - assets/images/Wallet_integration.png
+    - assets/images/Jupiter1.png 
+    - assets/images/Bonk2.png
+    - assets/images/Wen2.png
+    - assets/images/Raydium2.png 
+    - assets/images/Myro1.png
+    - assets/images/Launchpad.png
+    - assets/images/Solgate2.png
+    - assets/images/Group481736.png
+    - assets/images/Bonk3.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -104,7 +104,6 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         ),
       ],
     ),
-
     OnboardingPage(
       title: 'Wallet and exchange integration',
       description:
@@ -137,72 +136,48 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         ),
       ],
     ),
-
-    OnboardingPage(
-      title: 'Wallet and exchange integration',
-      description:
-          'Securely manage, transfer and receive tokens. Conveniently handle transactions on Solana.',
-      backgroundImagePath: 'assets/images/background.png',
-      coins: [
-        CoinImage(
-            imagePath: 'assets/images/coin_solana.png',
-            position: Offset(20, 150),
-            size: 80),
-        CoinImage(
-            imagePath: 'assets/images/coin_usdt.png',
-            position: Offset(100, 200),
-            size: 80),
-        CoinImage(
-            imagePath: 'assets/images/coin_usdt.png',
-            position: Offset(180, 250),
-            size: 80),
-        CoinImage(
-            imagePath: 'assets/images/coin_bonk.png',
-            position: Offset(260, 300),
-            size: 80),
-      ],
-    ),
     OnboardingPage(
       title: 'Launchpad for Solana tokens',
       description:
           'Get early access to promising Solana based projects and participate in ICOs securely.',
       backgroundImagePath: 'assets/images/background.png',
       coins: [
-        CoinImage(
-            imagePath: 'assets/images/coin_solana.png',
-            position: Offset(20, 150),
-            size: 80),
-        CoinImage(
+         const CoinImage(
+            imagePath: 'assets/images/Solgate2.png',
+            position: Offset(200, 20),
+            size: 200),
+            const CoinImage(
             imagePath: 'assets/images/coin_bonk.png',
-            position: Offset(280, 200),
-            size: 80),
-        CoinImage(
-            imagePath: 'assets/images/coin_raydium.png',
-            position: Offset(50, 300),
-            size: 80),
-        CoinImage(
-            imagePath: 'assets/images/coin_wen.png',
-            position: Offset(250, 350),
-            size: 80),
-      ],
+            position: Offset(0, 450),
+            size: 150),
+        const WalletExchangeImage(
+          imagePath: 'assets/images/Launchpad.png', // Update this path
+          size: 1000, // Adjust size as needed
+        ),
+        const CoinImage(
+            imagePath: 'assets/images/Myro1.png',
+            position: Offset(300, 400),
+            size: 150),
+       ],
     ),
     OnboardingPage(
-      title: 'Staking support',
-      description:
-          'Stake your tokens directly within the app, participating in the network\'s security and operations while earning rewards.',
-      backgroundImagePath: 'assets/images/background.png',
-      coins: [
-        CoinImage(
-            imagePath: 'assets/images/coin_solana.png',
-            position: Offset(20, 150),
-            size: 80),
-        CoinImage(
-            imagePath: 'assets/images/coin_raydium.png',
-            position: Offset(280, 200),
-            size: 80),
-      ],
-    ),
-  ];
+          title: 'Launchpad for Solana tokens',
+          description:
+              'Get early access to promising Solana based projects and participate in ICOs securely.',
+          backgroundImagePath: 'assets/images/background.png',
+          coins: [
+            const WalletExchangeImage(
+              imagePath: 'assets/images/Group481736.png', // Update this path
+              size: 1000, // Adjust size as needed
+            ),
+            const CoinImage(
+                imagePath: 'assets/images/coin_usdt.png',
+                position: Offset(270, 450),
+                size: 150),
+          ],
+        ),
+
+];
 
   void _goToPage(int newPage) {
     if (_isAnimating || newPage < 0 || newPage >= pages.length) return;
