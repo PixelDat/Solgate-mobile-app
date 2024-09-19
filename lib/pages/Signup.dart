@@ -39,7 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
         if (userCredential != null && userCredential.user != null) {
           // Create Firestore record
-          await _createUserRecord(userCredential.user!.uid);
+          await _createUserRecord(uid: userCredential.user!.uid);
           
           // Navigate to onboarding or home page
           Navigator.pushReplacementNamed(context, '/onboarding');
@@ -59,20 +59,29 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  Future<void> _createUserRecord(String uid) async {
+  Future<void> _createUserRecord({required String uid, String? email, String? fullName}) async {
     final signupReward = int.tryParse(dotenv.env['SIGNUP_REWARD'] ?? '') ?? 100;
     
     try {
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'fullName': _fullName,
-        'email': _email,
-        'pointsBalance': signupReward,
-      });
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      
+      if (!userDoc.exists) {
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'fullName': fullName ?? _fullName,
+          'email': email ?? _email,
+          'pointsBalance': signupReward,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        // Optionally update existing user data
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'lastSignIn': FieldValue.serverTimestamp(),
+        });
+      }
     } catch (e) {
-      print('Error creating user record: $e');
-      // You might want to show an error message to the user here
+      print('Error creating/updating user record: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error creating user profile. Please try again.')),
+        SnackBar(content: Text('Error updating user profile. Please try again.')),
       );
     }
   }
@@ -88,7 +97,18 @@ class _SignUpPageState extends State<SignUpPage> {
         idToken: googleAuth.idToken,
       );
 
-      await _signInWithCredential(credential);
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // Save user data to Firestore
+        await _createUserRecord(uid: user.uid, email: user.email, fullName: user.displayName);
+
+        // Navigate to onboarding or home page
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      } else {
+        throw Exception('User is null after Google Sign In');
+      }
     } catch (e) {
       print('Error during Google sign in: $e');
       if (e is PlatformException) {
@@ -143,7 +163,7 @@ class _SignUpPageState extends State<SignUpPage> {
     try {
       final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       if (userCredential.user != null) {
-        await _createUserRecord(userCredential.user!.uid);
+        await _createUserRecord(uid: userCredential.user!.uid);
         Navigator.pushReplacementNamed(context, '/onboarding');
       } else {
         throw Exception('User creation failed');
