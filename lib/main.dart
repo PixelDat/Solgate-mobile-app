@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:tongate/pages/create_or_import_wallet.dart';
 import './pages/SplashScreen.dart';
 import './pages/onboarding.dart';
 import './pages/Signup.dart';
@@ -18,9 +19,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => SignUpPage(),
+        '/': (context) => CreateOrImportWalletPage(),
+        '/splashscreen': (context) => SplashScreen(),
         '/onboarding': (context) => OnboardingFlow(),
         '/signup': (context) => SignUpPage(),
+        '/createorimportwalletpage': (context) => CreateOrImportWalletPage(),
       },
       theme: ThemeData(
         fontFamily: 'Nunito_Sans',

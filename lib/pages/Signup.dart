@@ -105,7 +105,7 @@ class _SignUpPageState extends State<SignUpPage> {
         await _createUserRecord(uid: user.uid, email: user.email, fullName: user.displayName);
 
         // Navigate to onboarding or home page
-        Navigator.pushReplacementNamed(context, '/onboarding');
+        Navigator.pushReplacementNamed(context, '/createorimportwalletpage');
       } else {
         throw Exception('User is null after Google Sign In');
       }
