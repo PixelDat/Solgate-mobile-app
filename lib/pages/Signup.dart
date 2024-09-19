@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:twitter_login/twitter_login.dart';
 import '../services/auth_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -25,25 +30,133 @@ class _SignUpPageState extends State<SignUpPage> {
         _isLoading = true;
       });
 
-      UserCredential? userCredential = await _authService.signUp(
-        fullName: _fullName,
-        email: _email,
-        password: _password,
-      );
+      try {
+        UserCredential? userCredential = await _authService.signUp(
+          fullName: _fullName,
+          email: _email,
+          password: _password,
+        );
 
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (userCredential != null) {
-        // Navigate to onboarding or home page
-        Navigator.pushReplacementNamed(context, '/onboarding');
-      } else {
-        // Show error message
+        if (userCredential != null && userCredential.user != null) {
+          // Create Firestore record
+          await _createUserRecord(userCredential.user!.uid);
+          
+          // Navigate to onboarding or home page
+          Navigator.pushReplacementNamed(context, '/onboarding');
+        } else {
+          throw Exception('User creation failed');
+        }
+      } catch (e) {
+        print('Error during sign up: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Sign Up Failed. Please try again.')),
         );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
+    }
+  }
+
+  Future<void> _createUserRecord(String uid) async {
+    final signupReward = int.tryParse(dotenv.env['SIGNUP_REWARD'] ?? '') ?? 100;
+    
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'fullName': _fullName,
+        'email': _email,
+        'pointsBalance': signupReward,
+      });
+    } catch (e) {
+      print('Error creating user record: $e');
+      // You might want to show an error message to the user here
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error creating user profile. Please try again.')),
+      );
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return;
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await _signInWithCredential(credential);
+    } catch (e) {
+      print('Error during Google sign in: $e');
+      if (e is PlatformException) {
+        print('Error code: ${e.code}');
+        print('Error message: ${e.message}');
+        print('Error details: ${e.details}');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google Sign In Failed. Please try again.')),
+      );
+    }
+  }
+
+  Future<void> _handleTwitterSignIn() async {
+    final twitterLogin = TwitterLogin(
+      apiKey: dotenv.env['TWITTER_API_KEY']!,
+      apiSecretKey: dotenv.env['TWITTER_API_SECRET_KEY']!,
+      redirectURI: 'solgate://',
+    );
+
+    try {
+      final authResult = await twitterLogin.login();
+      switch (authResult.status) {
+        case TwitterLoginStatus.loggedIn:
+          final credential = TwitterAuthProvider.credential(
+            accessToken: authResult.authToken!,
+            secret: authResult.authTokenSecret!,
+          );
+          await _signInWithCredential(credential);
+          break;
+        case TwitterLoginStatus.cancelledByUser:
+          // User cancelled the login flow
+          break;
+        case TwitterLoginStatus.error:
+          throw Exception(authResult.errorMessage);
+        default:
+          throw Exception('Unknown error');
+      }
+    } catch (e) {
+      print('Error during Twitter sign in: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Twitter Sign In Failed. Please try again.')),
+      );
+    }
+  }
+
+  Future<void> _signInWithCredential(AuthCredential credential) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      if (userCredential.user != null) {
+        await _createUserRecord(userCredential.user!.uid);
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      } else {
+        throw Exception('User creation failed');
+      }
+    } catch (e) {
+      print('Error during sign in: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign In Failed. Please try again.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -330,7 +443,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Widget _buildSocialButton(String assetName) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        if (assetName.contains('google')) {
+          _handleGoogleSignIn();
+        } else if (assetName.contains('x')) {
+          _handleTwitterSignIn();
+        }
+      },
       child: Container(
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(

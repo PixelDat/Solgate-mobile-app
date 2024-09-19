@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1090559860924',
     projectId: 'tongate-4d2a0',
     storageBucket: 'tongate-4d2a0.appspot.com',
-    iosBundleId: 'com.example.zik',
+    iosBundleId: 'com.pixeldat.tongate',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1090559860924',
     projectId: 'tongate-4d2a0',
     storageBucket: 'tongate-4d2a0.appspot.com',
-    iosBundleId: 'com.example.zik',
+    iosBundleId: 'com.pixeldat.tongate',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

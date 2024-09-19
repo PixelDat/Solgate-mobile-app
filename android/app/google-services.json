@@ -9,10 +9,15 @@
       "client_info": {
         "mobilesdk_app_id": "1:1090559860924:android:3790468aae9da66d7fb0b9",
         "android_client_info": {
-          "package_name": "com.example.zik"
+          "package_name": "com.pixeldat.tongate"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1090559860924-0110c0nvn1ljcfs5o9dsmn2l8cmpkrfm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAnAOFKiWlDCFDCwbynhUGugZvJ6M0_VHs"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090559860924-0110c0nvn1ljcfs5o9dsmn2l8cmpkrfm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1090559860924-6uihotn94n76haefv9dplbhargf0q2d3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pixeldat.tongate"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +48,12 @@
           "package_name": "com.pixeldat.tongate"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1090559860924-0110c0nvn1ljcfs5o9dsmn2l8cmpkrfm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAnAOFKiWlDCFDCwbynhUGugZvJ6M0_VHs"
@@ -39,7 +61,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090559860924-0110c0nvn1ljcfs5o9dsmn2l8cmpkrfm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1090559860924-6uihotn94n76haefv9dplbhargf0q2d3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pixeldat.tongate"
+              }
+            }
+          ]
         }
       }
     }

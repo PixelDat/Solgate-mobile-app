@@ -1,4 +1,4 @@
-name: zik
+name: tongate
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -33,6 +33,9 @@ dependencies:
   firebase_core: ^2.14.0
   firebase_auth: ^4.8.1
   cloud_firestore: ^4.15.0
+  flutter_dotenv: ^5.0.2
+  google_sign_in: ^6.1.0
+  twitter_login: ^4.4.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -97,6 +100,7 @@ flutter:
     - assets/images/background_top_left.png
     - assets/images/background_bottom_right.png
     - assets/images/glow_background_1.png
+    - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
