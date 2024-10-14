@@ -33,8 +33,12 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         if (userCredential != null && userCredential.user != null) {
-          // Navigate to home page or main app screen
-          Navigator.pushReplacementNamed(context, '/home');
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .update({'lastSignIn': FieldValue.serverTimestamp()});
+
+          Navigator.pushReplacementNamed(context, '/createorimportwalletpage');
         } else {
           throw Exception('Login failed');
         }
@@ -66,8 +70,11 @@ class _LoginPageState extends State<LoginPage> {
       final User? user = userCredential.user;
 
       if (user != null) {
+        // Update or create user record
+        await _updateUserRecord(user);
+
         // Navigate to home page or main app screen
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/createorimportwalletpage');
       } else {
         throw Exception('User is null after Google Sign In');
       }
@@ -120,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       if (userCredential.user != null) {
-        Navigator.pushReplacementNamed(context, '/home');
+        await _updateUserRecord(userCredential.user!);
+        Navigator.pushReplacementNamed(context, '/createorimportwalletpage');
       } else {
         throw Exception('User login failed');
       }
@@ -132,6 +140,25 @@ class _LoginPageState extends State<LoginPage> {
     } finally {
       setState(() {
         _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _updateUserRecord(User user) async {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    
+    if (!userDoc.exists) {
+      // Create new user record if it doesn't exist
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'fullName': user.displayName ?? '',
+        'email': user.email ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastSignIn': FieldValue.serverTimestamp(),
+      });
+    } else {
+      // Update existing user record
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'lastSignIn': FieldValue.serverTimestamp(),
       });
     }
   }
@@ -181,178 +208,224 @@ class _LoginPageState extends State<LoginPage> {
           SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.all(24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 40),
-                    Image.asset(
-                      'assets/images/logo.png',
-                      height: 80,  // Increased from 80
-                      width: 80,   // Increased from 80
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Log in',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+              child: AbsorbPointer(
+                absorbing: _isLoading,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: 40),
+                      Image.asset(
+                        'assets/images/logo.png',
+                        height: 80,  // Increased from 80
+                        width: 80,   // Increased from 80
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Welcome back to Solgate 🙂',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
+                      SizedBox(height: 5),
+                      Text(
+                        'Log in',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 32),
-                    _buildTextField(
-                      label: 'Email',
-                      icon: Icons.email,
-                      onChanged: (value) => _email = value,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    _buildTextField(
-                      label: 'Password',
-                      icon: Icons.lock,
-                      obscureText: _obscurePassword,
-                      onChanged: (value) => _password = value,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      SizedBox(height: 8),
+                      Text(
+                        'Welcome back to Solgate 🙂',
+                        style: TextStyle(
+                          fontSize: 16,
                           color: Colors.white70,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 32),
+                      _buildTextField(
+                        label: 'Email',
+                        icon: Icons.email,
+                        onChanged: (value) => _email = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
                         },
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          // TODO: Implement password recovery
-                          Navigator.pushNamed(context, '/forgot_password');
+                      SizedBox(height: 16),
+                      _buildTextField(
+                        label: 'Password',
+                        icon: Icons.lock,
+                        obscureText: _obscurePassword,
+                        onChanged: (value) => _password = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
                         },
-                        child: Text(
-                          'Forgot password? Recover here',
-                          style: TextStyle(
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
                             color: Colors.white70,
                           ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
                       ),
-                    ),
-                    SizedBox(height: 24),
-                    _isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color.fromARGB(255, 185, 68, 235), // Purple
-                                Color(0xFF4EADFF), // Blue
-                                Color(0xFF5EEBC7), // Teal
-                              ],
-                              stops: [0.2, 0.7, 1.0],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
+                      SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/forgot_password');
+                        },
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Forgot password? ',
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                              WidgetSpan(
+                                child: ShaderMask(
+                                  shaderCallback: (Rect bounds) {
+                                    return LinearGradient(
+                                      colors: [
+                                        Color.fromARGB(255, 185, 68, 235), // Purple
+                                        Color(0xFF4EADFF), // Blue
+                                        Color(0xFF5EEBC7), // Teal
+                                      ],
+                                      stops: [0.0, 0.5, 1.0],
+                                    ).createShader(bounds);
+                                  },
+                                  child: Text(
+                                    'Recover here',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          child: ElevatedButton(
-                            onPressed: _formKey.currentState?.validate() ?? false ? _login : null,
-                            child: Text(
-                              'Log In',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 34),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color.fromARGB(255, 185, 68, 235), // Purple
+                              Color(0xFF4EADFF), // Blue
+                              Color(0xFF5EEBC7), // Teal
+                            ],
+                            stops: [0.2, 0.7, 1.0],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _login,
+                          child: _isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                'Log In',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
-                              disabledBackgroundColor: Colors.grey.withOpacity(0.3),
-                              disabledForegroundColor: Colors.white60,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              minimumSize: Size(double.infinity, 60),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.grey.withOpacity(0.3),
+                            disabledForegroundColor: Colors.white60,
+                            elevation: 0,
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: Size(double.infinity, 60),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                         ),
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: Colors.white38)),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'Or',
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: Colors.white38)),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              'Or',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+                          Expanded(child: Divider(color: Colors.white38)),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildSocialButton('assets/images/google_icon.png', _handleGoogleSignIn),
+                          _buildSocialButton('assets/images/x_icon.png', _handleTwitterSignIn),
+                        ],
+                      ),
+                      SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have an account? ",
                             style: TextStyle(color: Colors.white70),
                           ),
-                        ),
-                        Expanded(child: Divider(color: Colors.white38)),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildSocialButton('assets/images/google_icon.png', _handleGoogleSignIn),
-                        _buildSocialButton('assets/images/x_icon.png', _handleTwitterSignIn),
-                      ],
-                    ),
-                    SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/signup');
-                          },
-                          child: Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Colors.purpleAccent,
-                              fontWeight: FontWeight.bold,
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/signup');
+                            },
+                            child: ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return LinearGradient(
+                                colors: [
+                                  Color.fromARGB(255, 185, 68, 235), // Purple
+                                  Color(0xFF4EADFF), // Blue
+                                  Color(0xFF5EEBC7), // Teal
+                                ],
+                                stops: [0.0, 0.5, 1.0],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ).createShader(bounds);
+                            },
+                            child: Text(
+                              'Signup',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -6,6 +6,8 @@ import './pages/SplashScreen.dart';
 import './pages/onboarding.dart';
 import './pages/Signup.dart';
 import './pages/login.dart';
+// import './pages/home.dart'; // Import your HomePage
+import './pages/forgot_password.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignUpPage(),
         '/login': (context) => LoginPage(),
         '/createorimportwalletpage': (context) => CreateOrImportWalletPage(),
+        '/forgot_password': (context) => ForgotPasswordPage(),
+        // '/home': (context) => HomePage(),
       },
       theme: ThemeData(
         fontFamily: 'Nunito_Sans',

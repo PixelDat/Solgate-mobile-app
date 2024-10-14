@@ -226,7 +226,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: SingleChildScrollView(
               padding: EdgeInsets.all(24.0),
               child: Form(
-                key: _formKey, // Assign the form key
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -241,11 +241,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Welcome to Solgate, sign up with Google or X, or you can fill out the fields below',
-                      style: TextStyle(color: Colors.white70),
+                      'Welcome to Solgate 🙂',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 32),
                     _buildTextField(
                       'Full Name*',
                       Icons.person,
@@ -350,30 +353,34 @@ class _SignUpPageState extends State<SignUpPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Already have an account?',
-                            style: TextStyle(color: Colors.white70)),
-                        ShaderMask(
-                          shaderCallback: (Rect bounds) {
-                            return LinearGradient(
-                              colors: [
-                                Color.fromARGB(255, 185, 68, 235), // Purple
-                                Color(0xFF4EADFF), // Blue
-                                Color(0xFF5EEBC7), // Teal
-                              ],
-                              stops: [0.0, 0.5, 1.0],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ).createShader(bounds);
+                        Text(
+                          'Already have an account? ',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(context, '/login');
                           },
-                          child: TextButton(
+                          child: ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return LinearGradient(
+                                colors: [
+                                  Color.fromARGB(255, 185, 68, 235), // Purple
+                                  Color(0xFF4EADFF), // Blue
+                                  Color(0xFF5EEBC7), // Teal
+                                ],
+                                stops: [0.0, 0.5, 1.0],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ).createShader(bounds);
+                            },
                             child: Text(
                               'Log In',
                               style: TextStyle(
-                                color: Colors.white, // This color will be overridden by the gradient
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            onPressed: () {},
                           ),
                         ),
                       ],
