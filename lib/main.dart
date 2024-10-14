@@ -8,6 +8,7 @@ import './pages/Signup.dart';
 import './pages/login.dart';
 // import './pages/home.dart'; // Import your HomePage
 import './pages/forgot_password.dart';
+import './pages/import_wallet_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => ForgotPasswordPage(),
+        '/': (context) => ImportWalletPage(),
         '/splashscreen': (context) => SplashScreen(),
         '/onboarding': (context) => OnboardingFlow(),
         '/signup': (context) => SignUpPage(),
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/createorimportwalletpage': (context) => CreateOrImportWalletPage(),
         '/forgot_password': (context) => ForgotPasswordPage(),
         // '/home': (context) => HomePage(),
+        '/import_wallet': (context) => ImportWalletPage(),
       },
       theme: ThemeData(
         fontFamily: 'Nunito_Sans',
