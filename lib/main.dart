@@ -5,6 +5,7 @@ import 'package:tongate/pages/create_or_import_wallet.dart';
 import './pages/SplashScreen.dart';
 import './pages/onboarding.dart';
 import './pages/Signup.dart';
+import './pages/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +20,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => CreateOrImportWalletPage(),
+        '/': (context) => LoginPage(),
         '/splashscreen': (context) => SplashScreen(),
         '/onboarding': (context) => OnboardingFlow(),
         '/signup': (context) => SignUpPage(),
+        '/login': (context) => LoginPage(),
         '/createorimportwalletpage': (context) => CreateOrImportWalletPage(),
       },
       theme: ThemeData(

@@ -101,6 +101,7 @@ flutter:
     - assets/images/background_bottom_right.png
     - assets/images/glow_background_1.png 
     - assets/images/getIn.png
+    - assets/images/logo.png
     - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # An image asset can refer to one or more resolution-specific "variants", see

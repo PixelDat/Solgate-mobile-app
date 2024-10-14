@@ -34,4 +34,16 @@ class AuthService {
       return null;
     }
   }
+
+  Future<UserCredential?> signIn({required String email, required String password}) async {
+    try {
+      return await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      print('Error signing in: $e');
+      return null;
+    }
+  }
 }
