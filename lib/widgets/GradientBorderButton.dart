@@ -24,35 +24,32 @@ class GradientBorderButton extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.circular(20), // Updated border radius
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Container(
-        margin: EdgeInsets.all(2), // Creates the border effect
+        margin: EdgeInsets.all(2), // This creates the border effect
         decoration: BoxDecoration(
-          color: Colors.transparent, // Transparent body
-          borderRadius: BorderRadius.circular(18), // Adjusted to match outer radius minus margin
+          color: Colors.black, // Match this with your background color
+          borderRadius: BorderRadius.circular(18),
         ),
         child: ElevatedButton(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent, // Transparent button background
-            foregroundColor: Colors.white, // White text color
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
             elevation: 0,
             padding: EdgeInsets.symmetric(vertical: 16),
             minimumSize: Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18), // Match inner container radius
-            ),
-          ),
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white, // Ensures text is white
-              ),
-              textAlign: TextAlign.center, // Centers the text
+              borderRadius: BorderRadius.circular(18),
             ),
           ),
         ),

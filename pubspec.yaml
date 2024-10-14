@@ -36,6 +36,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   google_sign_in: ^6.1.0
   twitter_login: ^4.4.0
+  flutter_clipboard_manager: ^0.0.3
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginPage(),
+        '/': (context) => CreateOrImportWalletPage(),
         '/splashscreen': (context) => SplashScreen(),
         '/onboarding': (context) => OnboardingFlow(),
         '/signup': (context) => SignUpPage(),

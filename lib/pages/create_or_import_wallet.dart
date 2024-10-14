@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tongate/widgets/GradientButton.dart'; // Add this import
 import 'package:tongate/widgets/GradientBorderButton.dart'; // Add this import
+import 'package:tongate/pages/import_wallet_page.dart';
 
 class CreateOrImportWalletPage extends StatelessWidget {
   @override
@@ -71,7 +72,10 @@ class CreateOrImportWalletPage extends StatelessWidget {
                   GradientBorderButton(
                     text: 'Import a wallet',
                     onPressed: () {
-                      // TODO: Implement import wallet functionality
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ImportWalletPage()),
+                      );
                     },
                   ),
                 ],
