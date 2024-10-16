@@ -5,6 +5,8 @@ import '../services/auth_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:twitter_login/twitter_login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:tongate/widgets/CustomToast.dart';
+import 'package:tongate/utils/toast_utils.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -38,15 +40,14 @@ class _LoginPageState extends State<LoginPage> {
               .doc(userCredential.user!.uid)
               .update({'lastSignIn': FieldValue.serverTimestamp()});
 
+          showCustomToast(context, 'Login successful', ToastType.success);
           Navigator.pushReplacementNamed(context, '/createorimportwalletpage');
         } else {
           throw Exception('Login failed');
         }
       } catch (e) {
         print('Error during login: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login Failed. Please try again.')),
-        );
+        showCustomToast(context, 'Login Failed. Please try again.', ToastType.error);
       } finally {
         setState(() {
           _isLoading = false;
@@ -70,19 +71,15 @@ class _LoginPageState extends State<LoginPage> {
       final User? user = userCredential.user;
 
       if (user != null) {
-        // Update or create user record
         await _updateUserRecord(user);
-
-        // Navigate to home page or main app screen
+        showCustomToast(context, 'Google Sign In successful', ToastType.success);
         Navigator.pushReplacementNamed(context, '/createorimportwalletpage');
       } else {
         throw Exception('User is null after Google Sign In');
       }
     } catch (e) {
       print('Error during Google sign in: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google Sign In Failed. Please try again.')),
-      );
+      showCustomToast(context, 'Google Sign In Failed. Please try again.', ToastType.error);
     }
   }
 
@@ -104,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
           await _signInWithCredential(credential);
           break;
         case TwitterLoginStatus.cancelledByUser:
-          // User cancelled the login flow
+          showCustomToast(context, 'Twitter Sign In cancelled', ToastType.warning);
           break;
         case TwitterLoginStatus.error:
           throw Exception(authResult.errorMessage);
@@ -113,9 +110,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print('Error during Twitter sign in: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Twitter Sign In Failed. Please try again.')),
-      );
+      showCustomToast(context, 'Twitter Sign In Failed. Please try again.', ToastType.error);
     }
   }
 
@@ -128,15 +123,14 @@ class _LoginPageState extends State<LoginPage> {
       final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       if (userCredential.user != null) {
         await _updateUserRecord(userCredential.user!);
+        showCustomToast(context, 'Sign In successful', ToastType.success);
         Navigator.pushReplacementNamed(context, '/createorimportwalletpage');
       } else {
         throw Exception('User login failed');
       }
     } catch (e) {
       print('Error during sign in: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign In Failed. Please try again.')),
-      );
+      showCustomToast(context, 'Sign In Failed. Please try again.', ToastType.error);
     } finally {
       setState(() {
         _isLoading = false;
@@ -148,7 +142,6 @@ class _LoginPageState extends State<LoginPage> {
     final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
     
     if (!userDoc.exists) {
-      // Create new user record if it doesn't exist
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'fullName': user.displayName ?? '',
         'email': user.email ?? '',
@@ -156,7 +149,6 @@ class _LoginPageState extends State<LoginPage> {
         'lastSignIn': FieldValue.serverTimestamp(),
       });
     } else {
-      // Update existing user record
       await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'lastSignIn': FieldValue.serverTimestamp(),
       });
@@ -168,13 +160,11 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Main background color
           Container(
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 0, 0, 0),
             ),
           ),
-          // Glow background
           Positioned.fill(
             child: Opacity(
               opacity: 0.6,
@@ -184,7 +174,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          // Top-left background image
           Positioned(
             top: -700,
             left: -900,
@@ -194,7 +183,6 @@ class _LoginPageState extends State<LoginPage> {
               height: 2200,
             ),
           ),
-          // Bottom-right background image
           Positioned(
             top: -10,
             left: -30,
@@ -204,7 +192,6 @@ class _LoginPageState extends State<LoginPage> {
               height: 300,
             ),
           ),
-          // Main content
           SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.all(24.0),
@@ -219,8 +206,8 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 40),
                       Image.asset(
                         'assets/images/logo.png',
-                        height: 80,  // Increased from 80
-                        width: 80,   // Increased from 80
+                        height: 80,
+                        width: 80,
                       ),
                       SizedBox(height: 5),
                       Text(
@@ -298,9 +285,9 @@ class _LoginPageState extends State<LoginPage> {
                                   shaderCallback: (Rect bounds) {
                                     return LinearGradient(
                                       colors: [
-                                        Color.fromARGB(255, 185, 68, 235), // Purple
-                                        Color(0xFF4EADFF), // Blue
-                                        Color(0xFF5EEBC7), // Teal
+                                        Color.fromARGB(255, 185, 68, 235),
+                                        Color(0xFF4EADFF),
+                                        Color(0xFF5EEBC7),
                                       ],
                                       stops: [0.0, 0.5, 1.0],
                                     ).createShader(bounds);
@@ -323,9 +310,9 @@ class _LoginPageState extends State<LoginPage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Color.fromARGB(255, 185, 68, 235), // Purple
-                              Color(0xFF4EADFF), // Blue
-                              Color(0xFF5EEBC7), // Teal
+                              Color.fromARGB(255, 185, 68, 235),
+                              Color(0xFF4EADFF),
+                              Color(0xFF5EEBC7),
                             ],
                             stops: [0.2, 0.7, 1.0],
                             begin: Alignment.centerLeft,
@@ -401,26 +388,26 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.pushNamed(context, '/signup');
                             },
                             child: ShaderMask(
-                            shaderCallback: (Rect bounds) {
-                              return LinearGradient(
-                                colors: [
-                                  Color.fromARGB(255, 185, 68, 235), // Purple
-                                  Color(0xFF4EADFF), // Blue
-                                  Color(0xFF5EEBC7), // Teal
-                                ],
-                                stops: [0.0, 0.5, 1.0],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ).createShader(bounds);
-                            },
-                            child: Text(
-                              'Signup',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              shaderCallback: (Rect bounds) {
+                                return LinearGradient(
+                                  colors: [
+                                    Color.fromARGB(255, 185, 68, 235),
+                                    Color(0xFF4EADFF),
+                                    Color(0xFF5EEBC7),
+                                  ],
+                                  stops: [0.0, 0.5, 1.0],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ).createShader(bounds);
+                              },
+                              child: Text(
+                                'Signup',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
                           )
                         ],
                       ),

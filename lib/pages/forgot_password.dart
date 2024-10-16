@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:tongate/widgets/CustomToast.dart';
+import 'package:tongate/utils/toast_utils.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   @override
@@ -20,14 +22,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       try {
         await FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password reset email sent. Check your inbox.')),
-        );
+        showCustomToast(context, 'Password reset email sent. Check your inbox.', ToastType.success);
         Navigator.of(context).pop(); // Return to login page
       } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.message}')),
-        );
+        showCustomToast(context, 'Error: ${e.message}', ToastType.error);
       } finally {
         setState(() {
           _isLoading = false;
@@ -121,7 +119,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     SizedBox(height: 20),
                     _isLoading
-                        ? CircularProgressIndicator()
+                        ? CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
                         : Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -153,7 +153,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 padding: EdgeInsets.symmetric(vertical: 16),
                                 minimumSize: Size(double.infinity, 60),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                               ),
                             ),

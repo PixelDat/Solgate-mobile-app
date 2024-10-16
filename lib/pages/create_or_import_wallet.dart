@@ -68,6 +68,7 @@ class CreateOrImportWalletPage extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     onPressed: () {
@@ -76,7 +77,14 @@ class CreateOrImportWalletPage extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   GradientBorderButton(
-                    text: 'Import a wallet',
+                    child: Text(
+                      'Import a wallet',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,

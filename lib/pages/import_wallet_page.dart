@@ -9,6 +9,8 @@ import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:hex/hex.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:base58check/base58check.dart' as base58;
+import 'package:tongate/widgets/CustomToast.dart';
+import 'package:tongate/utils/toast_utils.dart';
 
 class ImportWalletPage extends StatefulWidget {
   @override
@@ -181,7 +183,7 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
                               Text('Confirming...'),
                             ],
                           )
-                        : Text('Confirm wallet'),
+                        : Text('Confirm wallet', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),),
                   ),
                 ),
               ],
@@ -200,16 +202,12 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
     try {
       final recoveryPhrase = _recoveryPhraseController.text.trim();
       if (recoveryPhrase.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please enter a recovery phrase')),
-        );
+        showCustomToast(context, 'Please enter a recovery phrase', ToastType.warning);
         return;
       }
 
       if (!bip39.validateMnemonic(recoveryPhrase)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid recovery phrase')),
-        );
+        showCustomToast(context, 'Invalid recovery phrase', ToastType.error);
         return;
       }
 
@@ -227,14 +225,10 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       print(wallet);
       await _saveWallet(wallet);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Wallet imported successfully')),
-      );
+      showCustomToast(context, 'Wallet imported successfully', ToastType.success);
       // TODO: Navigate to the next screen
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error importing wallet: ${e.toString()}')),
-      );
+      showCustomToast(context, 'Error importing wallet: ${e.toString()}', ToastType.error);
     } finally {
       setState(() {
         _isLoading = false;
@@ -263,34 +257,32 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
     await _storage.write(key: 'wallets', value: jsonEncode(wallets));
   }
 
-    Future<String> _generatePrivateKey(String recoveryPhrase, {String blockchain = 'solana'}) async {
-      if (!bip39.validateMnemonic(recoveryPhrase)) {
-        throw ArgumentError('Invalid mnemonic');
-      }
-
-      final seed = bip39.mnemonicToSeed(recoveryPhrase);
-      // Remove the HEX encoding
-      // final seedHex = HEX.encode(seed);
-
-      String derivationPath;
-      switch (blockchain.toLowerCase()) {
-        case 'solana':
-          derivationPath = "m/44'/501'/0'/0'";
-          final keyData = await ED25519_HD_KEY.derivePath(derivationPath, seed); // Use seed directly
-          return base58.Base58CheckEncoder(keyData.key.toString()).toString();
-        case 'ethereum':
-          derivationPath = "m/44'/60'/0'/0/0";
-          final masterKey = await ED25519_HD_KEY.getMasterKeyFromSeed(seed); // Use seed directly
-          final privateKey = HEX.encode(masterKey.key);
-          final ethPrivateKey = EthPrivateKey.fromHex(privateKey);
-          return ethPrivateKey.privateKey.toString();
-        case 'bitcoin':
-          derivationPath = "m/44'/0'/0'/0/0";
-          throw UnimplementedError('Bitcoin key derivation not implemented');
-        default:
-          throw ArgumentError('Unsupported blockchain: $blockchain');
-      }
+  Future<String> _generatePrivateKey(String recoveryPhrase, {String blockchain = 'solana'}) async {
+    if (!bip39.validateMnemonic(recoveryPhrase)) {
+      throw ArgumentError('Invalid mnemonic');
     }
+
+    final seed = bip39.mnemonicToSeed(recoveryPhrase);
+
+    String derivationPath;
+    switch (blockchain.toLowerCase()) {
+      case 'solana':
+        derivationPath = "m/44'/501'/0'/0'";
+        final keyData = await ED25519_HD_KEY.derivePath(derivationPath, seed);
+        return base58.Base58CheckEncoder(keyData.key.toString()).toString();
+      case 'ethereum':
+        derivationPath = "m/44'/60'/0'/0/0";
+        final masterKey = await ED25519_HD_KEY.getMasterKeyFromSeed(seed);
+        final privateKey = HEX.encode(masterKey.key);
+        final ethPrivateKey = EthPrivateKey.fromHex(privateKey);
+        return ethPrivateKey.privateKey.toString();
+      case 'bitcoin':
+        derivationPath = "m/44'/0'/0'/0/0";
+        throw UnimplementedError('Bitcoin key derivation not implemented');
+      default:
+        throw ArgumentError('Unsupported blockchain: $blockchain');
+    }
+  }
 
   String _encrypt(String data) {
     final encrypter = encrypt.Encrypter(encrypt.AES(_encryptionKey));

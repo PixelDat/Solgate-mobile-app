@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class GradientBorderButton extends StatelessWidget {
-  final String text;
+  final Widget child;
   final VoidCallback onPressed;
 
   const GradientBorderButton({
     Key? key,
-    required this.text,
+    required this.child,
     required this.onPressed,
   }) : super(key: key);
 
@@ -33,14 +33,7 @@ class GradientBorderButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
         ),
         child: ElevatedButton(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
+          child: child,
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
