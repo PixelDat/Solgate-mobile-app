@@ -285,50 +285,42 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
     return Padding(
       padding: EdgeInsets.all(24.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Center(
-            child: Text(
-              'Passphrase',
-              style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
+          Text(
+            'Passphrase',
+            style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
-          Center(
-            child: Text(
-              'For added security. This is the only way you\'d be able to recover your account. Store it securely to keep your tokens safe.',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
+          Text(
+            'For added security. This is the only way you\'d be able to recover your account. Store it securely to keep your tokens safe.',
+            style: TextStyle(color: Colors.white70, fontSize: 16),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
-          Center(
-            child: Text(
-              'Recovery Phrases',
-              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
+          Text(
+            'Recovery Phrases',
+            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
-          Center(
-            child: Text(
-              'Please record this phrases in the correct order using the corresponding numbers and save it in a secure place.',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-              textAlign: TextAlign.center,
-            ),
+          Text(
+            'Please record this phrases in the correct order using the corresponding numbers and save it in a secure place.',
+            style: TextStyle(color: Colors.white70, fontSize: 14),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
-          _showPhrase ? _buildPhraseGrid() : _buildShowPhraseButton(),
-          SizedBox(height: 16),
-          Center(
-            child: TextButton.icon(
-              icon: Icon(Icons.copy, color: Colors.white70),
-              label: Text('Copy to clipboard', style: TextStyle(color: Colors.white70)),
-              onPressed: _copyToClipboard,
-            ),
+          Expanded(
+            child: _showPhrase ? _buildPhraseGrid() : _buildShowPhraseButton(),
           ),
-          Spacer(),
+          SizedBox(height: 16),
+          TextButton.icon(
+            icon: Icon(Icons.copy, color: Colors.white70),
+            label: Text('Copy to clipboard', style: TextStyle(color: Colors.white70)),
+            onPressed: _copyToClipboard,
+          ),
+          SizedBox(height: 24),
           Text(
             'An estimated total of 4.2B\$ was lost, due to people losing access to their wallet',
             style: TextStyle(color: Colors.white54, fontSize: 12),
@@ -374,10 +366,10 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
   Widget _buildPhraseGrid() {
     return GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: 3,
+        crossAxisCount: 2,
+        childAspectRatio: 4,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
@@ -385,14 +377,34 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white10,
-            borderRadius: BorderRadius.circular(8),
+            color: Color.fromARGB(0, 30, 27, 46),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Color.fromARGB(255, 100, 64, 117), width: 1),
           ),
-          child: Center(
-            child: Text(
-              '${(index + 1).toString().padLeft(2, '0')}  ${_recoveryPhrase[index]}',
-              style: TextStyle(color: Colors.white),
-            ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Color.fromARGB(255, 100, 64, 117), width: 1),
+                  ),
+                ),
+                child: Text(
+                  '${(index + 1).toString().padLeft(2, '0')}',
+                  style: TextStyle(color: Color.fromARGB(255, 219, 140, 255), fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    _recoveryPhrase[index],
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
