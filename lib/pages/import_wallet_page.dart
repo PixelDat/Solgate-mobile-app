@@ -43,24 +43,7 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
               ),
             ),
           ),
-          Positioned(
-            top: -700,
-            left: -900,
-            child: Image.asset(
-              'assets/images/background_top_left.png',
-              width: 2200,
-              height: 2200,
-            ),
-          ),
-          Positioned(
-            top: -10,
-            left: -30,
-            child: Image.asset(
-              'assets/images/background_bottom_right.png',
-              width: 300,
-              height: 300,
-            ),
-          ),
+         
           // Main content
           SafeArea(
             child: Column(

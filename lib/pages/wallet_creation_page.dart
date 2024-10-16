@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tongate/widgets/GradientButton.dart';
 import 'package:bip39/bip39.dart' as bip39;
+import 'dart:ui';
 
 class wallet_creation_page extends StatefulWidget {
   @override
@@ -49,25 +50,8 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
             ),
           ),
           // Top-left background image
-          Positioned(
-            top: -700,
-            left: -900,
-            child: Image.asset(
-              'assets/images/background_top_left.png',
-              width: 2200,
-              height: 2200,
-            ),
-          ),
-          // Bottom-right background image
-          Positioned(
-            top: -10,
-            left: -30,
-            child: Image.asset(
-              'assets/images/background_bottom_right.png',
-              width: 300,
-              height: 300,
-            ),
-          ),
+          
+        
           // Main content
           SafeArea(
             child: Column(
@@ -102,8 +86,26 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
       child: Row(
         children: List.generate(3, (index) {
           return Expanded(
-            child: Container(
-              color: index <= _currentPage ? Colors.blue : Colors.grey,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: index <= _currentPage
+                      ? LinearGradient(
+                          colors: [
+                            if (index == 0) Color(0xFFA98CFF),
+                            if (index == 1) Color(0xFFA98CFF),
+                            if (index == 2) Color(0xFFA98CFF),
+                            Color(0xFFA98CFF),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        )
+                      : null,
+                  color: index <= _currentPage ? null : Color.fromARGB(255, 53, 48, 77),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
             ),
           );
         }),
@@ -150,24 +152,20 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 24),
-            Text(
-              '• Write it down, write your secret phrase, and store it in a secure offline location!',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+            _buildInfoItem(
+              'Write it down, write your secret phrase, and store it in a secure offline location!',
             ),
-            SizedBox(height: 8),
-            Text(
-              '• Solgate does not keep a copy of your secret phrase.',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+            SizedBox(height: 12),
+            _buildInfoItem(
+              'Solgate does not keep a copy of your secret phrase.',
             ),
-            SizedBox(height: 8),
-            Text(
-              '• Saving this digitally in plain text is not advisable, examples include screenshots, text files, or emailing yourself.',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+            SizedBox(height: 12),
+            _buildInfoItem(
+              'Saving this digitally in plain text is not advisable, examples include screenshots, text files, or emailing yourself.',
             ),
-            SizedBox(height: 8),
-            Text(
-              '• Keep it confident, and choose a secure storage method.',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+            SizedBox(height: 12),
+            _buildInfoItem(
+              'Keep it confident, and choose a secure storage method.',
             ),
             SizedBox(height: 24),
             Text(
@@ -184,6 +182,36 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
               child: Text('Next', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(String text) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
+            border: Border.all(color: Colors.purple.withOpacity(0.3), width: 1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.check_circle_outline, color: Colors.green, size: 20),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  text,
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
