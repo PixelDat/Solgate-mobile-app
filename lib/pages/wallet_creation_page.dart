@@ -122,12 +122,20 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
           children: [
             Align(
               alignment: Alignment.topRight,
-              child: TextButton(
+              child: TextButton.icon(
+                icon: Icon(Icons.arrow_forward, color: Colors.white70, size: 18),
+                label: Text(
+                  'Skip',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 onPressed: () => _pageController.nextPage(
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                 ),
-                child: Text('Skip', style: TextStyle(color: Colors.white70)),
               ),
             ),
             SizedBox(height: 10),
@@ -225,12 +233,20 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
         children: [
           Align(
             alignment: Alignment.topRight,
-            child: TextButton(
+            child: TextButton.icon(
+              icon: Icon(Icons.arrow_forward, color: Colors.white70, size: 18),
+              label: Text(
+                'Skip',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
               onPressed: () => _pageController.nextPage(
                 duration: Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
               ),
-              child: Text('Skip', style: TextStyle(color: Colors.white70)),
             ),
           ),
           Spacer(),
