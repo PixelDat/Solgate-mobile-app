@@ -287,24 +287,36 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Passphrase',
-            style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+          Center(
+            child: Text(
+              'Passphrase',
+              style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           ),
           SizedBox(height: 16),
-          Text(
-            'For added security. This is the only way you\'d be able to recover your account. Store it securely to keep your tokens safe.',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+          Center(
+            child: Text(
+              'For added security. This is the only way you\'d be able to recover your account. Store it securely to keep your tokens safe.',
+              style: TextStyle(color: Colors.white70, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
           ),
           SizedBox(height: 24),
-          Text(
-            'Recovery Phrases',
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          Center(
+            child: Text(
+              'Recovery Phrases',
+              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           ),
           SizedBox(height: 16),
-          Text(
-            'Please record this phrases in the correct order using the corresponding numbers and save it in a secure place.',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+          Center(
+            child: Text(
+              'Please record this phrases in the correct order using the corresponding numbers and save it in a secure place.',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
           ),
           SizedBox(height: 16),
           _showPhrase ? _buildPhraseGrid() : _buildShowPhraseButton(),
@@ -336,18 +348,24 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
 
   Widget _buildShowPhraseButton() {
     return Center(
-      child: ElevatedButton(
-        child: Text('Show phrase'),
+      child: ElevatedButton.icon(
+        icon: Icon(Icons.visibility_off, color: Colors.white, size: 20),
+        label: Text(
+          'Show phrase',
+          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         onPressed: () {
           setState(() {
             _showPhrase = true;
           });
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
+          backgroundColor: Color.fromARGB(255, 24, 33, 51),  // Dark background color
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(10),  // Rounded corners
           ),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
       ),
     );
