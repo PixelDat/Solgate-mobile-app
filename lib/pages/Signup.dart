@@ -14,7 +14,6 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   String _password = '';
-  String _reEnteredPassword = '';
   String _fullName = '';
   String _email = '';
   bool _isLoading = false;
@@ -285,19 +284,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           return 'Password must be at least 8 characters';
                         }
                         // Add more validation if needed
-                        return null;
-                      },
-                    ),
-                    _buildPasswordField(
-                      'Re-Enter Password',
-                      onChanged: (value) => _reEnteredPassword = value,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please re-enter your password';
-                        }
-                        if (value != _password) {
-                          return 'Passwords do not match';
-                        }
                         return null;
                       },
                     ),

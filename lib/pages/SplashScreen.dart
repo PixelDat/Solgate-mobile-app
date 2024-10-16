@@ -27,7 +27,6 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _blackScreenFadeAnimation;
-  late Animation<double> _diagonalRevealAnimation;
   late Animation<Offset> _logoSlideAnimation;
   late Animation<double> _logoFadeAnimation;
   late Animation<double> _logoScaleAnimation; // Add scale animation
@@ -43,14 +42,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _blackScreenFadeAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.3, curve: Curves.easeInOut),
-      ),
-    );
-
-    // Diagonal reveal animation
-    _diagonalRevealAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.0, 0.3, curve: Curves.easeInOut),
