@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:tongate/widgets/GradientButton.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'dart:ui';
+import 'package:tongate/utils/toast_utils.dart';
+import 'package:tongate/widgets/CustomToast.dart';
 
 class wallet_creation_page extends StatefulWidget {
   @override
@@ -23,8 +25,10 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
 
   void _copyToClipboard() {
     Clipboard.setData(ClipboardData(text: _recoveryPhrase.join(' ')));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Recovery phrase copied to clipboard')),
+    showCustomToast(
+      context,
+      'Recovery phrase copied to clipboard',
+      ToastType.success,
     );
   }
 
