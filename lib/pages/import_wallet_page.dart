@@ -6,7 +6,8 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'dart:convert';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
-import 'package:solana/solana.dart';
+import 'package:hex/hex.dart';
+import 'package:web3dart/web3dart.dart';
 import 'package:base58check/base58check.dart' as base58;
 
 class ImportWalletPage extends StatefulWidget {
@@ -18,13 +19,14 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
   final TextEditingController _recoveryPhraseController = TextEditingController();
   final _storage = FlutterSecureStorage();
   final _encryptionKey = encrypt.Key.fromLength(32); // Generate a secure key
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background elements (unchanged)
+          // Background elements
           Container(
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 0, 0, 0),
@@ -162,10 +164,24 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
                 Padding(
                   padding: EdgeInsets.all(24.0),
                   child: GradientButton(
-                    text: 'Confirm wallet',
-                    onPressed: () {
-                      // Implement wallet confirmation logic
-                    },
+                    onPressed: _isLoading ? () {} : _confirmWallet,
+                    child: _isLoading
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Text('Confirming...'),
+                            ],
+                          )
+                        : Text('Confirm wallet'),
                   ),
                 ),
               ],
@@ -177,36 +193,53 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
   }
 
   Future<void> _confirmWallet() async {
-    final recoveryPhrase = _recoveryPhraseController.text.trim();
-    if (recoveryPhrase.isEmpty) {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final recoveryPhrase = _recoveryPhraseController.text.trim();
+      if (recoveryPhrase.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please enter a recovery phrase')),
+        );
+        return;
+      }
+
+      if (!bip39.validateMnemonic(recoveryPhrase)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid recovery phrase')),
+        );
+        return;
+      }
+
+      final solanaPrivateKey = await _generatePrivateKey(recoveryPhrase, blockchain: 'solana');
+      final ethereumPrivateKey = await _generatePrivateKey(recoveryPhrase, blockchain: 'ethereum');
+      final walletName = await _getNextWalletName();
+
+      final wallet = {
+        'wallet_name': walletName,
+        'passphrase': _encrypt(recoveryPhrase),
+        'solana_private_key': _encrypt(solanaPrivateKey),
+        'ethereum_private_key': _encrypt(ethereumPrivateKey),
+      };
+      
+      print(wallet);
+      await _saveWallet(wallet);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a recovery phrase')),
+        SnackBar(content: Text('Wallet imported successfully')),
       );
-      return;
-    }
-
-    if (!bip39.validateMnemonic(recoveryPhrase)) {
+      // TODO: Navigate to the next screen
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invalid recovery phrase')),
+        SnackBar(content: Text('Error importing wallet: ${e.toString()}')),
       );
-      return;
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    final privateKey = await _generatePrivateKey(recoveryPhrase);
-    final walletName = await _getNextWalletName();
-
-    final wallet = {
-      'wallet_name': walletName,
-      'passphrase': _encrypt(recoveryPhrase),
-      'privateKey': _encrypt(privateKey),
-    };
-
-    await _saveWallet(wallet);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Wallet imported successfully')),
-    );
-    // TODO: Navigate to the next screen
   }
 
   Future<String> _getNextWalletName() async {
@@ -230,13 +263,34 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
     await _storage.write(key: 'wallets', value: jsonEncode(wallets));
   }
 
-  Future<String> _generatePrivateKey(String recoveryPhrase) async {
-    final seed = bip39.mnemonicToSeed(recoveryPhrase);
-    final derivationPath = "m/44'/501'/0'/0'"; // Solana derivation path
-    final keyPair = await Ed25519HDKeyPair.fromSeedWithHdPath(seed: seed, hdPath: derivationPath);
-    final extractedKeypair = await keyPair.extract();
-    return base58.Base58CheckEncoder(extractedKeypair.extractPublicKey().toString()).toString();
-  }
+    Future<String> _generatePrivateKey(String recoveryPhrase, {String blockchain = 'solana'}) async {
+      if (!bip39.validateMnemonic(recoveryPhrase)) {
+        throw ArgumentError('Invalid mnemonic');
+      }
+
+      final seed = bip39.mnemonicToSeed(recoveryPhrase);
+      // Remove the HEX encoding
+      // final seedHex = HEX.encode(seed);
+
+      String derivationPath;
+      switch (blockchain.toLowerCase()) {
+        case 'solana':
+          derivationPath = "m/44'/501'/0'/0'";
+          final keyData = await ED25519_HD_KEY.derivePath(derivationPath, seed); // Use seed directly
+          return base58.Base58CheckEncoder(keyData.key.toString()).toString();
+        case 'ethereum':
+          derivationPath = "m/44'/60'/0'/0/0";
+          final masterKey = await ED25519_HD_KEY.getMasterKeyFromSeed(seed); // Use seed directly
+          final privateKey = HEX.encode(masterKey.key);
+          final ethPrivateKey = EthPrivateKey.fromHex(privateKey);
+          return ethPrivateKey.privateKey.toString();
+        case 'bitcoin':
+          derivationPath = "m/44'/0'/0'/0/0";
+          throw UnimplementedError('Bitcoin key derivation not implemented');
+        default:
+          throw ArgumentError('Unsupported blockchain: $blockchain');
+      }
+    }
 
   String _encrypt(String data) {
     final encrypter = encrypt.Encrypter(encrypt.AES(_encryptionKey));

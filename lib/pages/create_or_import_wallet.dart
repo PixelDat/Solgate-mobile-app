@@ -63,7 +63,13 @@ class CreateOrImportWalletPage extends StatelessWidget {
                   ),
                   SizedBox(height: 40),
                   GradientButton(
-                    text: 'Create a new wallet',
+                    child: Text(
+                      'Create a new wallet',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
                     onPressed: () {
                       // TODO: Implement create wallet functionality
                     },
