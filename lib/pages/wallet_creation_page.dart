@@ -5,6 +5,7 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'dart:ui';
 import 'package:tongate/utils/toast_utils.dart';
 import 'package:tongate/widgets/CustomToast.dart';
+import 'dart:math';
 
 class wallet_creation_page extends StatefulWidget {
   @override
@@ -16,11 +17,23 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
   late List<String> _recoveryPhrase;
   bool _showPhrase = false;
   int _currentPage = 0;
+  List<String> _selectedWords = [];
+  int _currentConfirmationIndex = 0;
+  bool _isConfirmationCorrect = false;
+  List<int> _selectedIndices = [];
+  int _confirmedCount = 0;
 
   @override
   void initState() {
     super.initState();
     _recoveryPhrase = bip39.generateMnemonic().split(' ');
+    _generateConfirmationWords();
+  }
+
+  void _generateConfirmationWords() {
+    final random = Random();
+    _selectedIndices = List.generate(3, (_) => random.nextInt(_recoveryPhrase.length))..sort();
+    _selectedWords = _selectedIndices.map((index) => _recoveryPhrase[index]).toList();
   }
 
   void _copyToClipboard() {
@@ -73,6 +86,7 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
                       _buildWriteItDownScreen(),
                       _buildDontShareScreen(),
                       _buildRecoveryPhraseScreen(),
+                      _buildConfirmationScreen(),
                     ],
                   ),
                 ),
@@ -333,7 +347,10 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
           SizedBox(height: 24),
           GradientButton(
             onPressed: () {
-              // Handle wallet creation or navigation to the next screen
+              _pageController.nextPage(
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
             },
             child: Text('Proceed', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
           ),
@@ -413,5 +430,111 @@ class _wallet_creation_pageState extends State<wallet_creation_page> {
         );
       },
     );
+  }
+
+  Widget _buildConfirmationScreen() {
+    return Padding(
+      padding: EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Confirm Recovery Phrase',
+            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Progress: ${_confirmedCount + 1} / 3',
+            style: TextStyle(color: Colors.white70, fontSize: 16),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'What\'s the ${_getOrdinal(_selectedIndices[_currentConfirmationIndex] + 1)} word in your recovery phrase?',
+            style: TextStyle(color: Colors.white70, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 24),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 6,
+              itemBuilder: (context, index) {
+                final word = index < _selectedWords.length ? _selectedWords[index] : _getRandomWord();
+                return _buildWordOption(word);
+              },
+            ),
+          ),
+          SizedBox(height: 24),
+          if (_confirmedCount == 2)
+            Column(
+              children: [
+                Image.asset('assets/images/confirmation_complete.png', height: 100),
+                SizedBox(height: 16),
+                Text(
+                  'Great job! You\'ve confirmed your recovery phrase.',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          if (_isConfirmationCorrect)
+            GradientButton(
+              onPressed: () {
+                // Handle wallet creation or navigation to the next screen
+              },
+              child: Text('Create a passcode', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWordOption(String word) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: Colors.purple.withOpacity(0.5)),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 12),
+        ),
+        onPressed: () => _checkWord(word),
+        child: Text(word),
+      ),
+    );
+  }
+
+  void _checkWord(String selectedWord) {
+    if (selectedWord == _recoveryPhrase[_selectedIndices[_currentConfirmationIndex]]) {
+      setState(() {
+        _confirmedCount++;
+        if (_currentConfirmationIndex < 2) {
+          _currentConfirmationIndex++;
+        } else {
+          _isConfirmationCorrect = true;
+        }
+      });
+    } else {
+      showCustomToast(
+        context,
+        'Incorrect word. Please try again.',
+        ToastType.error,
+      );
+    }
+  }
+
+  String _getRandomWord() {
+    final random = Random();
+    return _recoveryPhrase[random.nextInt(_recoveryPhrase.length)];
+  }
+
+  String _getOrdinal(int number) {
+    if (number == 1) return '1st';
+    if (number == 2) return '2nd';
+    if (number == 3) return '3rd';
+    return '${number}th';
   }
 }
